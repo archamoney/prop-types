@@ -207,6 +207,9 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
         }
       }
       if (props[propName] == null) {
+        if (typeof isRequired === 'function') // If the isRequired prop is a function, run that function and pass the props as the only param. e.g. isRequiredIf( props => props.uid == undefined )
+          isRequired = isRequired( props );
+
         if (isRequired) {
           if (props[propName] === null) {
             return new PropTypeError('The ' + location + ' `' + propFullName + '` is marked as required ' + ('in `' + componentName + '`, but its value is `null`.'));
@@ -221,6 +224,9 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
 
     var chainedCheckType = checkType.bind(null, false);
     chainedCheckType.isRequired = checkType.bind(null, true);
+    chainedCheckType.isRequiredIf = function(conditionalFunction) { // If using isRequiredIf, pass the conditional function to checkType so it can be evaluated with the props.
+      return checkType.bind(null, conditionalFunction);             // e.g. isRequiredIf( props => props.uid == undefined )
+    };
 
     return chainedCheckType;
   }
