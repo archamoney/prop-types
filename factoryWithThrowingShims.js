@@ -25,6 +25,7 @@ module.exports = function() {
     );
   };
   shim.isRequired = shim;
+  shim.isRequiredIf = shim;
   function getShim() {
     return shim;
   };
